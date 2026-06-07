@@ -200,6 +200,16 @@ fn main() {
     cc.files(SOURCES);
     cc.define("FDK_FALLTHROUGH", "");
 
+    // Fix for MSVC: define architecture to avoid #warning directive
+    if cfg!(target_env = "msvc") {
+        // Define FDK_HIGH_PERFORMANCE to skip the #warning line
+        cc.define("FDK_HIGH_PERFORMANCE", None);
+        // Also set architecture-specific defines for ARM64
+        if cfg!(target_arch = "aarch64") {
+            cc.define("__ARM_ARCH_8__", None);
+        }
+    }
+
     for include in INCLUDE_DIRS {
         cc.include(include);
     }
